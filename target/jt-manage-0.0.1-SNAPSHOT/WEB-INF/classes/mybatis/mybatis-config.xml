@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!--ORM对象关系映射
+		表: tb_user            对象  user
+			user_id                userId
+			user_name              userName
+		如果启动驼峰映射规则,则可以实现自动的映射,
+		
+		具体过程:
+			结果集user_id去除中间的"_"并且后边首字母大小
+			变为userId,之后为user对象指定的属性赋值
+		
+		注意事项:
+			如果采用驼峰映射,则必须满足要求.
+			字段或属性不能随意修改
+	  -->
+	<settings>
+		<!-- 开启驼峰自动映射 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+	
+	<plugins>
+		<!-- 通用Mapper插件 -->
+		<plugin interceptor="com.github.abel533.mapperhelper.MapperInterceptor">
+			<!--主键自增回写方法,默认值MYSQL,详细说明请看文档 -->
+			<property name="IDENTITY" value="MYSQL" />
+			<!--通用Mapper接口，多个通用接口用逗号隔开 -->
+			<property name="mappers" value="com.jt.common.mapper.SysMapper" />
+		</plugin>
+	</plugins>
+	
+</configuration>

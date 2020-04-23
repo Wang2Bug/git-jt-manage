@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace:
+		1.必须与接口的路径匹配
+		2.名称必须唯一,否则程序启动报错
+		3.sql语句必须和接口方法保持一致 -->
+<mapper namespace="com.jt.manage.mapper.ItemMapper">
+	<!--必须配置别名,否则报错
+		ctrl + shift + y 小写
+		ctrl + shift + x 大写
+	  -->
+	  
+	<select id="findItemByPage" resultType="Item">
+		select * from tb_item 
+		order by updated desc 
+		limit #{start},#{rows}
+	</select>
+	
+	<update id="updateStatus">
+		update tb_item set status = #{status},updated = now() where id in
+		(
+			<foreach collection="ids" item="id" separator=",">
+				#{id}
+			</foreach>
+		)
+	</update>
+	
+	<delete id="deleteItem">
+		delete from tb_item where id in
+		(
+			<foreach collection="ids" item="id" separator=",">
+				#{id}
+			</foreach>
+		)
+	</delete>
+	
+</mapper>

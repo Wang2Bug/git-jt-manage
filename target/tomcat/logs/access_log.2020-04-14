@@ -1,0 +1,6 @@
+127.0.0.1 - - [14/Apr/2020:12:55:05 +0700] "GET /web/item/findItemById?itemId=1474391962 HTTP/1.0" 200 500 http-bio-8091-exec-1 318
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:12:55:05 +0700] "GET /web/item/findItemDescById/1474391962 HTTP/1.0" 200 5178 http-bio-8091-exec-2 8
+127.0.0.1 - - [14/Apr/2020:12:57:53 +0700] "GET /web/item/findItemById?itemId=1474391962 HTTP/1.0" 200 500 http-bio-8091-exec-3 7
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:12:57:53 +0700] "GET /web/item/findItemDescById/1474391962 HTTP/1.0" 200 5178 http-bio-8091-exec-4 4
+127.0.0.1 - - [14/Apr/2020:13:00:17 +0700] "GET /web/item/findItemById?itemId=1474391962 HTTP/1.0" 200 500 http-bio-8091-exec-5 17
+0:0:0:0:0:0:0:1 - - [14/Apr/2020:13:00:17 +0700] "GET /web/item/findItemDescById/1474391962 HTTP/1.0" 200 5178 http-bio-8091-exec-6 4

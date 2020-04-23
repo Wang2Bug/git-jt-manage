@@ -1,0 +1,160 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+		
+	<!-- 三.redis集群 -->
+	<!-- 3.2.cluster-factory -->
+	<!-- jedis 配置-->  
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig" >  
+        <!--最大空闲数-->  
+        <property name="maxIdle" value="${redis.maxIdle}" />  
+        <!--最大建立连接等待时间-->  
+        <property name="maxWaitMillis" value="${redis.maxWait}" />  
+        <!--是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个-->  
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+        <property name="maxTotal" value="${redis.maxTotal}" />  
+        <property name="minIdle" value="${redis.minIdle}" />  
+    </bean>
+    
+    <!--通过工厂模式获取数据  -->
+    <!--<bean id="jedisClusterFactory" class="com.jt.common.factory.JedisClusterFactory">-->
+    <bean id="jedisCluster" class="com.jt.common.factory.JedisClusterFactory">	
+    	<!--引入配置文件源文件  -->
+    	<property name="propertySource">
+    		<value>classpath:/properties/redis.properties</value>
+    	</property>
+    	<!--引入池配置文件  -->
+    	<property name="poolConfig" ref="poolConfig"/>
+    	<!--添加配置前缀-->
+    	<property name="redisNodePrefix" value="redis.cluster"/>
+    </bean>
+		
+	<!-- 3.1.cluster -->
+	<!-- 节点 -->
+	<!--<bean id="hostAndPort1" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port1}"/>
+	</bean>
+	<bean id="hostAndPort2" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port2}"/>
+	</bean>
+	<bean id="hostAndPort3" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port3}"/>
+	</bean>
+	<bean id="hostAndPort4" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port4}"/>
+	</bean>
+	<bean id="hostAndPort5" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port5}"/>
+	</bean>
+	<bean id="hostAndPort6" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port6}"/>
+	</bean>
+	<bean id="hostAndPort7" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port7}"/>
+	</bean>
+	<bean id="hostAndPort8" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port8}"/>
+	</bean>
+	<bean id="hostAndPort9" class="redis.clients.jedis.HostAndPort">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port9}"/>
+	</bean>-->
+	
+	<!-- 集群 -->
+	<!--<bean id="jedisCluster" class="redis.clients.jedis.JedisCluster">
+		<constructor-arg name="nodes">
+			<set>
+				<ref bean="hostAndPort1"/>
+				<ref bean="hostAndPort2"/>
+				<ref bean="hostAndPort3"/>
+				<ref bean="hostAndPort4"/>
+				<ref bean="hostAndPort5"/>
+				<ref bean="hostAndPort6"/>
+				<ref bean="hostAndPort7"/>
+				<ref bean="hostAndPort8"/>
+				<ref bean="hostAndPort9"/>
+			</set>
+		</constructor-arg>
+	</bean>-->
+	
+	<!-- 二.配置哨兵 -->
+	<!-- 定义连接池配置文件 -->	
+	<!--<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.MaxTotal}"/>
+		<property name="maxIdle" value="${redis.MaxIdle}"/>
+		<property name="minIdle" value="${redis.MinIdle}"/>
+	</bean>-->	
+	<!-- 定义连接池 -->	
+	<!--<bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool">
+		<constructor-arg name="masterName" value="${redis.sentinel.master}"/>
+		<constructor-arg name="sentinels">
+			<set>
+				<value>${redis.sentinelA}</value>
+				<value>${redis.sentinelB}</value>
+				<value>${redis.sentinelC}</value>
+			</set>
+		</constructor-arg>
+		<constructor-arg name="poolConfig" ref="poolConfig"/>
+	</bean>-->	
+	
+	
+	
+	<!--一.使用redis分片-->
+	
+	<!-- 定义连接池配置文件 -->	
+	<!--<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.MaxTotal}"/>
+		<property name="maxIdle" value="${redis.MaxIdle}"/>
+		<property name="minIdle" value="${redis.MinIdle}"/>
+	</bean>-->
+	
+	<!-- 定义分片节点对象 -->
+	<!--<bean id="info1" class="redis.clients.jedis.JedisShardInfo">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port1}"/>
+	</bean>
+	<bean id="info2" class="redis.clients.jedis.JedisShardInfo">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port2}"/>
+	</bean>
+	<bean id="info3" class="redis.clients.jedis.JedisShardInfo">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port3}"/>
+	</bean>-->
+	
+	<!-- 定义分片池对象 -->
+	<!--<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+		<constructor-arg name="poolConfig" ref="poolConfig"/>
+		<constructor-arg name="shards">
+			<list>
+				<ref bean="info1"/>		
+				<ref bean="info2"/>
+				<ref bean="info3"/>	
+			</list>
+		</constructor-arg>
+	</bean>-->
+	
+	<!-- spring整合redis -->
+	<!--<bean id="jedis" class="redis.clients.jedis.Jedis">
+		<constructor-arg name="host" value="${redis.host}"/>
+		<constructor-arg name="port" value="${redis.port}"/>		
+	</bean>-->
+	
+</beans>

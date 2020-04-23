@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	
+	<!--1.配置包扫描  -->
+	<context:component-scan base-package="com.jt"/>
+	
+	<!--2-1 加载pro配置文件  -->
+	<context:property-placeholder 
+	location="classpath:/properties/*.properties"/>
+	
+	<!--2.2 配置druid数据源
+		#{集合Id.key}   先从容器中获取集合,再从集合取值
+		${key}  		从容器中直接取值
+	  -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+	</bean>
+	
+	<!--3.1 事务注解写法  只要是更新操作,添加注解-->
+	<tx:annotation-driven/>
+	
+	<!--3.2 声明式事务处理的写法  需要提前定义事务控制策略
+		以后写方法不需要添加任何注解.
+		
+		1.配置事务管理器  真正的实现事务提交/回滚
+		2.定义事务通知      定义事务策略 哪些方法需要事务
+		3.定义事务切面      通知 + 切入点表达式
+	  -->
+	
+	<!--3.2.1 定时事务管理器  -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!--3.2.2 定义事务通知 
+		propagation="REQUIRED" 表示必须添加事务 默认值
+		propagation="SUPPORTS" 表示事务支持   
+		方法默认不添加事务.
+		如果该方法执行时之前已经有事务,则合并事务执行.
+		propagation="REQUIRES_NEW"
+		每次都会新创建事务
+	 -->
+	<tx:advice id="txAdvice">
+		<tx:attributes>
+			<tx:method name="save*"   propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="findAll" propagation="SUPPORTS" read-only="true"/>
+			<tx:method name="*"       propagation="REQUIRES_NEW" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!--3.2.3配置切面  
+		AOP中默认的代理策略
+		如果目标对象有接口     默认采用JDK方式创建代理对象
+			要求:必须有接口 
+		如果目标对象没有接口 则采用CGLIB形式创建代理对象
+			特点:创建出来的代理对象,都是目标对象的子类
+		
+		proxy-target-class="true" 强制使用cglib
+		
+		粗粒度控制: within(包名.类名)   按类匹配
+		细粒度控制: 方法参数级别
+		execution(返回值类型 包名.类名.方法名(参数列表))
+	-->
+	<aop:config>
+		<aop:pointcut expression="execution(* com.jt.manage.service..*.*(..))" id="pc"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pc"/>
+	</aop:config>
+	
+</beans>
